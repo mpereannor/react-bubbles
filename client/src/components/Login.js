@@ -1,69 +1,86 @@
-import React, {useState} from "react";
+import React, {useRef } from "react";
 import axios from 'axios';
-
-const loginApi = 'http://localhost:5000/api/login';
 
 function Login (props) {
 
-  const [userInfo, setUserInfo] = useState([]);
-  const handleSubmit = event => {
-    event.preventDefault();
-    
-    axios.post(loginApi, userInfo)
+  const usernameRef = useRef();
+  const passwordRef = useRef();
+
+  const handleSubmit = () => {
+
+    axios.post('http://localhost:5000/api/login',{
+            username: usernameRef.current.value,
+            password: passwordRef.current.value,
+          })
     .then(response => {
+      console.log('token is', response.data.payload)
       localStorage.setItem('token', response.data.payload);
-      props.history.push('/bubblepage');
+      props.history.replace('/bubblepage');
+    })
+    .catch(error => {
+      console.log(error, 'sorry')
     })
   }
-  // make a post request to retrieve a token from the api
-  // when you have handled the token, navigate to the BubblePage route
-
-  const onValueChange = event => {
-    setUserInfo({
-      ...userInfo,
-      [event.target.name] : event.target.value
-    })
-  }
-
+  
   return (
     <>
       <h1>Welcome to the Bubble App!</h1>
-      <div className='login'>
-        {/* <form onSubmit={handleSubmit}> */}
-          {/* <input type="text"
-          name="username"
-          placeholder="username" 
-          value={userInfo.username}
-          onChange={event => onValueChange(event)} />
-          <br />
-          <input type="text"
-          name="password" placeholder="password" 
-          value={userInfo.password}
-          onChange={event => onValueChange(event)} />
-          <button onSubmit={handleSubmit}>Submit</button>
-
-           */}
-
           <form>
             <div>
                 <h3>Log in</h3>
-                Username
+                username
                 <input 
-                type="text" name ="username" placeholder="enter your username" value={userInfo.username}
-                onChange={event=> onValueChange(event)}
+                ref={usernameRef}
+                type="text" 
                 />
                 <br/>
-                Password
-                <input type="password" name="password" placeholder="enter password" value={userInfo.password}
-                onChange={event=> onValueChange(event)} />
+                password
+                <input 
+                ref={passwordRef}
+                type="text" 
+                />
                 <br/>
-                <button onSubmit={handleSubmit}>Submit</button>
+                <button onClick={handleSubmit}>Submit</button>
             </div>
-        {/* </form>    */}
         </form>
-      </div>
     </>
   );
 };
 
 export default Login;
+
+/*
+import React, { useRef } from 'react';
+import axios from 'axios';
+const Login = (props) => {
+ const usernameRef = useRef();
+ const passwordRef = useRef();
+ const submit = () => {
+   axios.post('http://localhost:5000/api/login', {
+     username: usernameRef.current.value,
+     password: passwordRef.current.value,
+   })
+   .then(res => {
+     console.log("token is", res.data.payload);
+     localStorage.setItem("token", res.data.payload);
+     props.history.replace('/bubblepage');
+   // when you have handled the token, navigate to the BubblePage route
+   })
+   .catch(err => {
+     console.log("error");
+   })
+ }
+ return (
+   <div>
+     <div>
+       username <input ref={usernameRef} type="text" />
+       <br />
+       password <input ref={passwordRef} type="text" />
+     </div>
+     <div>
+       <button onClick={submit}>Submit</button>
+     </div>
+   </div>
+ );
+};
+*/
