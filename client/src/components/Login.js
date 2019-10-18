@@ -1,23 +1,36 @@
-import React, {useRef } from "react";
+import React, {useRef, useState } from "react";
 import axios from 'axios';
 
 function Login (props) {
 
-  const usernameRef = useRef();
-  const passwordRef = useRef();
+  const initialState = {
+    username: '', 
+    password: ''
+  };
 
-  const handleSubmit = () => {
+  const[loginState, setLoginState] = useState(initialState);
 
-    axios.post('http://localhost:5000/api/login',{
-            username: usernameRef.current.value,
-            password: passwordRef.current.value,
-          })
+  const handleChange= (e) => {
+    setLoginState({
+      ...loginState,
+      [e.target.name] : e.target.value
+    })
+  }
+  
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    axios.post('http://localhost:5000/api/login', loginState)
+    
     .then(response => {
+      debugger
       console.log('token is', response.data.payload)
       localStorage.setItem('token', response.data.payload);
-      props.history.replace('/bubblepage');
+      setLoginState(initialState);
+      props.history.push('/bubblepage');
     })
     .catch(error => {
+      debugger 
       console.log(error, 'sorry')
     })
   }
@@ -30,17 +43,21 @@ function Login (props) {
                 <h3>Log in</h3>
                 username
                 <input 
-                ref={usernameRef}
                 type="text" 
+                name="username"
+                onChange={handleChange}
+                value={loginState.username}
                 />
                 <br/>
                 password
                 <input 
-                ref={passwordRef}
+                name="password"
                 type="text" 
+                onChange={handleChange} 
+                value={loginState.password}
                 />
                 <br/>
-                <button onClick={handleSubmit}>Submit</button>
+                <button onClick={e => (handleSubmit(e))}>Submit</button>
             </div>
         </form>
     </>
@@ -49,38 +66,3 @@ function Login (props) {
 
 export default Login;
 
-/*
-import React, { useRef } from 'react';
-import axios from 'axios';
-const Login = (props) => {
- const usernameRef = useRef();
- const passwordRef = useRef();
- const submit = () => {
-   axios.post('http://localhost:5000/api/login', {
-     username: usernameRef.current.value,
-     password: passwordRef.current.value,
-   })
-   .then(res => {
-     console.log("token is", res.data.payload);
-     localStorage.setItem("token", res.data.payload);
-     props.history.replace('/bubblepage');
-   // when you have handled the token, navigate to the BubblePage route
-   })
-   .catch(err => {
-     console.log("error");
-   })
- }
- return (
-   <div>
-     <div>
-       username <input ref={usernameRef} type="text" />
-       <br />
-       password <input ref={passwordRef} type="text" />
-     </div>
-     <div>
-       <button onClick={submit}>Submit</button>
-     </div>
-   </div>
- );
-};
-*/

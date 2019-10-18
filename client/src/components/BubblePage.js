@@ -5,7 +5,7 @@ import Bubbles from "./Bubbles";
 import ColorList from "./ColorList";
 import { axiosWithAuth } from "../axios";
 
-const colorApi = 'http://localhost:5000//api/colors';
+const colorApi = 'http://localhost:5000/api/colors';
 const BubblePage = () => {
   const [colorList, setColorList] = useState([]);
 
